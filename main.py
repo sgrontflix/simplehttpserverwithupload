@@ -1,7 +1,6 @@
 """Simple HTTP server with upload functionality."""
 
 __version__ = '0.1'
-__all__ = ['SimpleHTTPRequestHandlerWithUpload']
 __author__ = 'sgrontflix'
 
 import http.server
@@ -37,8 +36,8 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         # html code of upload result page
         r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
                  '"http://www.w3.org/TR/html4/strict.dtd">')
-        r.append('<html>\n<title>Upload result page</title>\n')
-        r.append('<body>\n<h1>Upload result page</h1>\n')
+        r.append('<html>\n<title>Upload result</title>\n')
+        r.append('<body>\n<h1>Upload result</h1>\n')
         if result:
             r.append('<b><font color="green">File successfully uploaded</font></b>: ')
             r.append(message)
@@ -63,6 +62,8 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
             f.close()
 
     def handle_upload(self):
+        """Handles the file upload."""
+
         # read all bytes (headers included)
         # 'readlines()' hangs the script because it needs the EOF character to stop,
         # even if you specify how many bytes to read
