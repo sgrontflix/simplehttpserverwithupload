@@ -157,6 +157,15 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('port', action='store',
+                        default=8000, type=int,
+                        nargs='?',
+                        help='Specify alternate port [default: 8000]')
+    args = parser.parse_args()
+
     # ensure dual-stack is not disabled; ref #38907
     class DualStackServer(http.server.ThreadingHTTPServer):
         def server_bind(self):
