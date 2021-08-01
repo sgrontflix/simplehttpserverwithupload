@@ -1,7 +1,5 @@
 # Simple HTTP server with upload functionality
 
-Simple HTTP server with upload functionality written in Python.
-
 This script allows the user to create an HTTP server on the go for file sharing inside an home network.
 
 It does NOT provide any encryption. Only use it inside trusted networks.
