@@ -21,5 +21,5 @@ or
 
 `python3 main.py [-h] [port]`
 
-After the server finishes starting, open a web browser on another machine and type `<IP_ADDRESS>:8000` on the address bar, where `IP_ADDRESS` is your server's IP address. 
+After the server finishes starting, open a web browser on another machine and type `<IP_ADDRESS>:<PORT>` on the address bar, where `<IP_ADDRESS>` is your server's IP address and `<PORT>` is the port the server is running on (default: 8000). 
 You should now see all of the files contained in the directory you ran the code from and an upload section.
