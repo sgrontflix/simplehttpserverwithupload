@@ -177,5 +177,6 @@ if __name__ == '__main__':
 
     http.server.test(
         HandlerClass=SimpleHTTPRequestHandlerWithUpload,
-        ServerClass=DualStackServer
+        ServerClass=DualStackServer,
+        port=args.port
     )
