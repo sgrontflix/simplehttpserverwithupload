@@ -1,6 +1,6 @@
 # Simple HTTP server with upload functionality
 
-This script allows the user to create an HTTP server on the go for file sharing inside an home network.
+This script allows the user to create an HTTP server on the go for file sharing inside a home network.
 
 It does NOT provide any encryption. Only use it inside trusted networks.
 
