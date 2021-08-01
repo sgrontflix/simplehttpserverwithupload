@@ -12,6 +12,7 @@ import socket  # For gethostbyaddr()
 import sys
 import urllib.parse
 import contextlib
+from functools import partial
 
 from http import HTTPStatus
 
@@ -88,7 +89,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
 
         # write to file
         try:
-            with open(filename, 'wb') as file:
+            with open(f'{args.directory}/{filename}', 'wb') as file:
                 file.write(data)
         except IOError:
             return False, 'Couldn\'t save file.'
@@ -160,11 +161,24 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--cgi', action='store_true',
+                        help='Run as CGI Server')
+    parser.add_argument('--bind', '-b', metavar='ADDRESS',
+                        help='Specify alternate bind address '
+                             '[default: all interfaces]')
+    parser.add_argument('--directory', '-d', default=os.getcwd(),
+                        help='Specify alternative directory '
+                             '[default:current directory]')
     parser.add_argument('port', action='store',
                         default=8000, type=int,
                         nargs='?',
                         help='Specify alternate port [default: 8000]')
     args = parser.parse_args()
+    if args.cgi:
+        handler_class = http.server.CGIHTTPRequestHandler
+    else:
+        handler_class = partial(SimpleHTTPRequestHandlerWithUpload,
+                                directory=args.directory)
 
     # ensure dual-stack is not disabled; ref #38907
     class DualStackServer(http.server.ThreadingHTTPServer):
@@ -176,7 +190,8 @@ if __name__ == '__main__':
             return super().server_bind()
 
     http.server.test(
-        HandlerClass=SimpleHTTPRequestHandlerWithUpload,
+        HandlerClass=handler_class,
         ServerClass=DualStackServer,
-        port=args.port
+        port=args.port,
+        bind=args.bind
     )
