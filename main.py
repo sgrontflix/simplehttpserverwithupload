@@ -1,6 +1,6 @@
-"""Simple HTTP server with upload functionality."""
+"""Simple HTTP server with upload functionality and optional SSL/TLS support."""
 
-__version__ = '0.1'
+__version__ = '0.2'
 __author__ = 'sgrontflix'
 
 import http.server
@@ -10,6 +10,7 @@ import os
 import re
 import socket  # For gethostbyaddr()
 import sys
+import ssl
 import urllib.parse
 import contextlib
 from functools import partial
@@ -157,6 +158,32 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         return f
 
 
+def test(HandlerClass=http.server.BaseHTTPRequestHandler,
+         ServerClass=http.server.ThreadingHTTPServer,
+         protocol="HTTP/1.0", port=8000, bind=None):
+    """Test the HTTP request handler class.
+    This runs an HTTP server on port 8000 (or the port argument).
+    """
+    ServerClass.address_family, addr = http.server._get_best_family(bind, port)
+
+    HandlerClass.protocol_version = protocol
+    with ServerClass(addr, HandlerClass) as httpd:
+        host, port = httpd.socket.getsockname()[:2]
+        url_host = f'[{host}]' if ':' in host else host
+        print(
+            'Serving HTTP' + ('S' if args.certificate else '') + f' on {host} port {port} '
+            '(http' + ('s' if args.certificate else '') + f'://{url_host}:{port}/) ...'
+        )
+        # add ssl to http connection if certificate was specified
+        if args.certificate:
+            httpd.socket = ssl.wrap_socket(httpd.socket, certfile='cert.pem', server_side=True)
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nKeyboard interrupt received, exiting.")
+            sys.exit(0)
+
+
 if __name__ == '__main__':
     import argparse
 
@@ -168,7 +195,10 @@ if __name__ == '__main__':
                              '[default: all interfaces]')
     parser.add_argument('--directory', '-d', default=os.getcwd(),
                         help='Specify alternative directory '
-                             '[default:current directory]')
+                             '[default: current directory]')
+    parser.add_argument('--certificate', '-c',
+                        help='Your SSL certificate in the .pem file format '
+                             '[default: none]')
     parser.add_argument('port', action='store',
                         default=8000, type=int,
                         nargs='?',
@@ -189,7 +219,7 @@ if __name__ == '__main__':
                     socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
             return super().server_bind()
 
-    http.server.test(
+    test(
         HandlerClass=handler_class,
         ServerClass=DualStackServer,
         port=args.port,
