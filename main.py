@@ -196,7 +196,7 @@ if __name__ == '__main__':
     parser.add_argument('--directory', '-d', default=os.getcwd(),
                         help='Specify alternative directory '
                              '[default: current directory]')
-    parser.add_argument('--certificate', '-c',
+    parser.add_argument('--certificate', '-c', metavar='PATH_TO_CERTIFICATE',
                         help='Your SSL certificate in the .pem file format '
                              '[default: none]')
     parser.add_argument('port', action='store',
