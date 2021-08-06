@@ -1,6 +1,6 @@
 """Simple HTTP server with upload functionality and optional SSL/TLS support."""
 
-__version__ = '0.2'
+__version__ = '0.3'
 __author__ = 'sgrontflix'
 
 import http.server
@@ -36,15 +36,14 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         enc = sys.getfilesystemencoding()
 
         # html code of upload result page
-        r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
-                 '"http://www.w3.org/TR/html4/strict.dtd">')
+        r.append('<!DOCTYPE HTML')
         r.append('<html>\n<title>Upload result</title>\n')
         r.append('<body>\n<h1>Upload result</h1>\n')
         if result:
-            r.append('<b><font color="green">File successfully uploaded</font></b>: ')
-            r.append(message)
+            r.append('<b><font color="green">File(s) successfully uploaded</font></b>: ')
+            r.append(', '.join(message))
         else:
-            r.append('<b><font color="red">Failed to upload file</font></b>: ')
+            r.append('<b><font color="red">Failed to upload file(s)</font></b>: ')
             r.append(message)
         r.append(f'\n<br /><br />\n<a href=\"{self.headers["referer"]}\">Go back</a>')
         r.append('\n</body>\n</html>')
@@ -66,6 +65,9 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
     def handle_upload(self):
         """Handles the file upload."""
 
+        # extract boundary from headers
+        boundary = re.search(f'boundary=(.*)', self.headers['content-type']).group(1)
+
         # read all bytes (headers included)
         # 'readlines()' hangs the script because it needs the EOF character to stop,
         # even if you specify how many bytes to read
@@ -73,29 +75,31 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         # and 'splitlines(True)' splits the file into lines and retains the newline character
         data = self.rfile.read(int(self.headers['content-length'])).splitlines(True)
 
-        # find filename inside the headers
-        filename = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', str(data[1]))
+        # find all filenames
+        filenames = re.findall(f'{boundary}.*?filename="(.*?)"', str(data))
 
-        # name is found if 'filename' contains only one element
-        if len(filename) == 1:
-            filename = filename[0]
-        else:
-            return False, 'Couldn\'t find file name.'
+        if not filenames:
+            return False, 'Couldn\'t find file name(s).'
 
-        # delete lines 0, 1, 2, 3, n-2, n-1 (headers)
-        data = data[4:-2]
+        # find all boundary occurrences in data
+        boundary_indices = list((i for i, line in enumerate(data) if re.search(boundary, str(line))))
 
-        # join list of bytes into bytestring
-        data = b''.join(data)
+        # save file(s)
+        for i in range(len(filenames)):
+            # remove file headers
+            file_data = data[(boundary_indices[i] + 4):(boundary_indices[i+1])]
 
-        # write to file
-        try:
-            with open(f'{args.directory}/{filename}', 'wb') as file:
-                file.write(data)
-        except IOError:
-            return False, 'Couldn\'t save file.'
+            # join list of bytes into bytestring
+            file_data = b''.join(file_data)
 
-        return True, filename
+            # write to file
+            try:
+                with open(f'{args.directory}/{filenames[i]}', 'wb') as file:
+                    file.write(file_data)
+            except IOError:
+                return False, 'Couldn\'t save file(s).'
+
+        return True, filenames
 
     def list_directory(self, path):
         """Helper to produce a directory listing (absent index.html).
@@ -120,8 +124,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         displaypath = html.escape(displaypath, quote=False)
         enc = sys.getfilesystemencoding()
         title = 'Directory listing for %s' % displaypath
-        r.append('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
-                 '"http://www.w3.org/TR/html4/strict.dtd">')
+        r.append('<!DOCTYPE HTML PUBLIC')
         r.append('<html>\n<head>')
         r.append('<meta http-equiv="Content-Type" '
                  'content="text/html; charset=%s">' % enc)
@@ -144,7 +147,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         # file upload form
         r.append('<h1>File upload</h1>\n<hr>\n')
         r.append('<form id="upload" enctype="multipart/form-data" method="post" action="#">\n')
-        r.append('<input id="fileupload" name="file" type="file" />\n')
+        r.append('<input id="fileupload" name="file" type="file" multiple />\n')
         r.append('<input type="submit" value="Submit" id="submit" />\n')
         r.append('</form>')
         r.append('\n<hr>\n</body>\n</html>\n')
