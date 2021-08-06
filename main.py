@@ -87,7 +87,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         # save file(s)
         for i in range(len(filenames)):
             # remove file headers
-            file_data = data[(boundary_indices[i] + 4):(boundary_indices[i+1])]
+            file_data = data[(boundary_indices[i] + 4):boundary_indices[i+1]]
 
             # join list of bytes into bytestring
             file_data = b''.join(file_data)
