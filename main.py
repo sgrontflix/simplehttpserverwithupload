@@ -142,10 +142,11 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
                                                        html.escape(displayname, quote=False)))
         r.append('</ul>\n<hr>\n')
         # file upload form
-        r.append('<form id="upload" enctype="multipart/form-data" method="post" action="#">\n'
-                 '<input id="fileupload" name="file" type="file" />\n'
-                 '<input type="submit" value="Submit" id="submit" />\n'
-                 '</form>')
+        r.append('<h1>File upload</h1>\n<hr>\n')
+        r.append('<form id="upload" enctype="multipart/form-data" method="post" action="#">\n')
+        r.append('<input id="fileupload" name="file" type="file" />\n')
+        r.append('<input type="submit" value="Submit" id="submit" />\n')
+        r.append('</form>')
         r.append('\n<hr>\n</body>\n</html>\n')
         encoded = '\n'.join(r).encode(enc, 'surrogateescape')
         f = io.BytesIO()
