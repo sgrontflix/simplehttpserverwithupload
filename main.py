@@ -66,7 +66,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         """Handles the file upload."""
 
         # extract boundary from headers
-        boundary = re.search(f'boundary=(.*)', self.headers['content-type']).group(1)
+        boundary = re.search(f'boundary=([^;]+)', self.headers['content-type']).group(1)
 
         # read all bytes (headers included)
         # 'readlines()' hangs the script because it needs the EOF character to stop,
@@ -76,7 +76,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         data = self.rfile.read(int(self.headers['content-length'])).splitlines(True)
 
         # find all filenames
-        filenames = re.findall(f'{boundary}.*?filename="(.*?)"', str(data))
+        filenames = re.findall(f'{boundary}.+?filename="(.+?)"', str(data))
 
         if not filenames:
             return False, 'Couldn\'t find file name(s).'
