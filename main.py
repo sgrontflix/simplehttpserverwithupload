@@ -3,18 +3,17 @@
 __version__ = '0.3'
 __author__ = 'sgrontflix'
 
-import http.server
+import contextlib
 import html
+import http.server
 import io
 import os
 import re
 import socket  # For gethostbyaddr()
-import sys
 import ssl
+import sys
 import urllib.parse
-import contextlib
 from functools import partial
-
 from http import HTTPStatus
 
 
