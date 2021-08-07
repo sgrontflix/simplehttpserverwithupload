@@ -41,7 +41,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         r.append('<body>\n<h1>Upload result</h1>\n')
         if result:
             r.append('<b><font color="green">File(s) successfully uploaded</font></b>: ')
-            r.append(', '.join(message))
+            r.append(f'{", ".join(message)}.')
         else:
             r.append('<b><font color="red">Failed to upload file(s)</font></b>: ')
             r.append(message)
@@ -71,7 +71,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         # read all bytes (headers included)
         # 'readlines()' hangs the script because it needs the EOF character to stop,
         # even if you specify how many bytes to read
-        # "file.read(nbytes).splitlines(True)" does the trick because 'read()' reads 'nbytes' bytes
+        # 'file.read(nbytes).splitlines(True)' does the trick because 'read()' reads 'nbytes' bytes
         # and 'splitlines(True)' splits the file into lines and retains the newline character
         data = self.rfile.read(int(self.headers['content-length'])).splitlines(True)
 
@@ -79,7 +79,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         filenames = re.findall(f'{boundary}.+?filename="(.+?)"', str(data))
 
         if not filenames:
-            return False, 'Couldn\'t find file name(s).'
+            return False, 'couldn\'t find file name(s).'
 
         # find all boundary occurrences in data
         boundary_indices = list((i for i, line in enumerate(data) if re.search(boundary, str(line))))
@@ -97,7 +97,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
                 with open(f'{args.directory}/{filenames[i]}', 'wb') as file:
                     file.write(file_data)
             except IOError:
-                return False, 'Couldn\'t save file(s).'
+                return False, f'couldn\'t save {filenames[i]}.'
 
         return True, filenames
 
@@ -164,7 +164,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
 
 def test(HandlerClass=http.server.BaseHTTPRequestHandler,
          ServerClass=http.server.ThreadingHTTPServer,
-         protocol="HTTP/1.0", port=8000, bind=None):
+         protocol='HTTP/1.0', port=8000, bind=None):
     """Test the HTTP request handler class.
     This runs an HTTP server on port 8000 (or the port argument).
     """
@@ -184,7 +184,7 @@ def test(HandlerClass=http.server.BaseHTTPRequestHandler,
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\nKeyboard interrupt received, exiting.")
+            print('\nKeyboard interrupt received, exiting.')
             sys.exit(0)
 
 
