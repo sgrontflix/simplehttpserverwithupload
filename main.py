@@ -36,7 +36,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         enc = sys.getfilesystemencoding()
 
         # html code of upload result page
-        r.append('<!DOCTYPE HTML')
+        r.append('<!DOCTYPE HTML>')
         r.append('<html>\n<title>Upload result</title>\n')
         r.append('<body>\n<h1>Upload result</h1>\n')
         if result:
@@ -124,7 +124,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         displaypath = html.escape(displaypath, quote=False)
         enc = sys.getfilesystemencoding()
         title = 'Directory listing for %s' % displaypath
-        r.append('<!DOCTYPE HTML PUBLIC')
+        r.append('<!DOCTYPE HTML>')
         r.append('<html>\n<head>')
         r.append('<meta http-equiv="Content-Type" '
                  'content="text/html; charset=%s">' % enc)
