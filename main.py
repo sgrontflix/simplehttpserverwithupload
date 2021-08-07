@@ -37,16 +37,16 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
 
         # html code of upload result page
         r.append('<!DOCTYPE HTML>')
-        r.append('<html>\n<title>Upload result</title>\n')
-        r.append('<body>\n<h1>Upload result</h1>\n')
+        r.append('<html>\n<title>Upload result</title>')
+        r.append('<body>\n<h1>Upload result</h1>')
         if result:
             r.append('<b><font color="green">File(s) successfully uploaded</font></b>: ')
             r.append(f'{", ".join(message)}.')
         else:
             r.append('<b><font color="red">Failed to upload file(s)</font></b>: ')
             r.append(message)
-        r.append(f'\n<br /><br />\n<a href=\"{self.headers["referer"]}\">Go back</a>')
-        r.append('\n</body>\n</html>')
+        r.append(f'<br /><br />\n<a href=\"{self.headers["referer"]}\">Go back</a>')
+        r.append('</body>\n</html>')
 
         encoded = '\n'.join(r).encode(enc, 'surrogateescape')
         f = io.BytesIO()
@@ -143,14 +143,14 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
                 # Note: a link to a directory displays with @ and links with /
             r.append('<li><a href="%s">%s</a></li>' % (urllib.parse.quote(linkname, errors='surrogatepass'),
                                                        html.escape(displayname, quote=False)))
-        r.append('</ul>\n<hr>\n')
+        r.append('</ul>\n<hr>')
         # file upload form
-        r.append('<h1>File upload</h1>\n<hr>\n')
-        r.append('<form id="upload" enctype="multipart/form-data" method="post" action="#">\n')
-        r.append('<input id="fileupload" name="file" type="file" multiple />\n')
-        r.append('<input type="submit" value="Submit" id="submit" />\n')
+        r.append('<h1>File upload</h1>\n<hr>')
+        r.append('<form id="upload" enctype="multipart/form-data" method="post" action="#">')
+        r.append('<input id="fileupload" name="file" type="file" multiple />')
+        r.append('<input type="submit" value="Submit" id="submit" />')
         r.append('</form>')
-        r.append('\n<hr>\n</body>\n</html>\n')
+        r.append('<hr>\n</body>\n</html>')
         encoded = '\n'.join(r).encode(enc, 'surrogateescape')
         f = io.BytesIO()
         f.write(encoded)
