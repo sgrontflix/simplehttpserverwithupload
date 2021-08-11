@@ -62,7 +62,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
             f.close()
 
     def handle_upload(self):
-        """Handles the file upload."""
+        """Handle the file upload."""
 
         # extract boundary from headers
         boundary = re.search(f'boundary=([^;]+)', self.headers['content-type']).group(1)
