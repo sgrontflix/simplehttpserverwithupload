@@ -13,8 +13,27 @@ import socket  # For gethostbyaddr()
 import ssl
 import sys
 import urllib.parse
+import uuid
 from functools import partial
 from http import HTTPStatus
+
+
+def sanitize_filename(filename: str) -> str:
+    """
+    Replaces all forbidden chars with '' and removes unnecessary whitespaces
+    If, after sanitization, the given filename is empty, the function will return 'file_[UUID].[ext]'
+
+    :param filename: filename to be sanitized
+    :return: sanitized filename
+    """
+    chars = ['\\', '/', ':', '*', '?', '"', '<', '>', '|']
+
+    filename = filename.translate({ord(x): '' for x in chars}).strip()
+    name = re.sub(r'\.[^.]+$', '', filename)
+    extension = re.search(r'(\.[^.]+$)', filename)
+    extension = extension.group(1) if extension else ''
+
+    return filename if name else f'file_{uuid.uuid4().hex}{extension}'
 
 
 class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
@@ -79,6 +98,8 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
 
         if not filenames:
             return False, 'couldn\'t find file name(s).'
+
+        filenames = [sanitize_filename(filename) for filename in filenames]
 
         # find all boundary occurrences in data
         boundary_indices = list((i for i, line in enumerate(data) if re.search(boundary, str(line))))
