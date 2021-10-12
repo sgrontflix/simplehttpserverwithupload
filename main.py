@@ -21,7 +21,7 @@ from http import HTTPStatus
 def sanitize_filename(filename: str) -> str:
     """
     Replaces all forbidden chars with '' and removes unnecessary whitespaces
-    If, after sanitization, the given filename is empty, the function will return 'file_[UUID].[ext]'
+    If, after sanitization, the given filename is empty, the function will return 'file_[UUID][ext]'
 
     :param filename: filename to be sanitized
     :return: sanitized filename
